@@ -57,8 +57,8 @@
 
 `Dom` = 일반/보스 몬스터 지배력
 
-`Q_d` = 직타 최소~최대 대미지 난수 계수
-`Q_s` = 소환 최소~최대 대미지 난수 계수
+`Q_d` = 직타 최소\~최대 대미지 난수 계수
+`Q_s` = 소환 최소\~최대 대미지 난수 계수
 
 `COND_d` = 직타에 실제 적용되는 조건부 대미지 합
 `BACK_s` = 소환 백어택 대미지
@@ -136,10 +136,10 @@ W_d,max =
 WMAX
 
 W_d =
-W_d,min ~ W_d,max 사이의 고해상도 균등 난수
+W_d,min \~ W_d,max 사이의 고해상도 균등 난수
 ```
 
-일반적으로 `WMIN <= WMAX`이면 `WMIN ~ WMAX` 사이에서 결정된다.
+일반적으로 `WMIN <= WMAX`이면 `WMIN \~ WMAX` 사이에서 결정된다.
 
 `WMIN > WMAX`이면 하한도 `WMAX`로 고정되어 무기공격력 난수 폭이 사라진다.
 
@@ -156,10 +156,10 @@ W_s,max =
 WMAX
 
 W_s =
-W_s,min ~ W_s,max 사이의 무기공격력 값
+W_s,min \~ W_s,max 사이의 무기공격력 값
 ```
 
-일반적으로 `WMIN <= WMAX`이면 `WMIN ~ WMAX` 범위를 사용한다.
+일반적으로 `WMIN <= WMAX`이면 `WMIN \~ WMAX` 범위를 사용한다.
 
 `WMIN > WMAX`이면 하한도 `WMAX`로 고정되어 무기공격력 범위가 사라진다.
 
@@ -176,10 +176,10 @@ Q_d,max =
 MAX
 
 Q_d =
-Q_d,min ~ Q_d,max 사이의 고해상도 균등 난수
+Q_d,min \~ Q_d,max 사이의 고해상도 균등 난수
 ```
 
-일반적으로 `MIN <= MAX`이면 `MIN ~ MAX` 사이에서 결정된다.
+일반적으로 `MIN <= MAX`이면 `MIN \~ MAX` 사이에서 결정된다.
 
 `MIN > MAX`이면 하한도 `MAX`로 고정되어 난수 폭이 사라진다.
 
@@ -207,7 +207,7 @@ min(
 )
 
 Q_s =
-Q_s,min ~ Q_s,max 사이의 고해상도 균등 난수
+Q_s,min \~ Q_s,max 사이의 고해상도 균등 난수
 ```
 
 `Q_s,min_raw > Q_s,max`이면 하한도 `Q_s,max`로 고정된다.
@@ -302,7 +302,7 @@ f32(
 )
 ```
 
-MIN~MAX 난수 적용:
+MIN\~MAX 난수 적용:
 
 ```text
 T_raw =
@@ -438,7 +438,7 @@ f32(
 )
 ```
 
-MIN~MAX 난수 적용:
+MIN\~MAX 난수 적용:
 
 ```text
 T_raw =
@@ -869,7 +869,7 @@ f32(
 )
 ```
 
-MIN~MAX 난수 적용:
+MIN\~MAX 난수 적용:
 
 ```text
 T_raw =
@@ -1005,7 +1005,7 @@ f32(
 )
 ```
 
-MIN~MAX 난수 적용:
+MIN\~MAX 난수 적용:
 
 ```text
 T_raw =
