@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>라테일 대미지 계산기 v9.11</title>
+<title>라테일 대미지 계산기 v9.12</title>
 <style>
 :root{color-scheme:light;--ink:#183238;--muted:#62777c;--line:#d7e3e5;--accent:#146b72;--accent-soft:#e6f0f1;--warn:#8a5a11;--warn-bg:#fff6df}
 *{box-sizing:border-box}body{margin:0;background:#f3f7f7;color:var(--ink);font:15px/1.6 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}main{max-width:1180px;margin:auto;padding:32px 20px 44px}h1{margin:3px 0 8px;font-size:clamp(25px,4vw,34px);letter-spacing:-.04em}h2{margin:0 0 5px;font-size:18px}h3{margin:0;font-size:15px}p{margin:6px 0 14px}.eyebrow{color:var(--accent);font-size:12px;font-weight:750;letter-spacing:.13em}.muted,small{color:var(--muted)}small{display:block;font-size:12px}.notice{padding:12px 16px;background:var(--accent-soft);border-radius:10px;margin:18px 0}.columns{display:grid;grid-template-columns:1fr 1fr;gap:16px}.panel{padding:20px;background:#fff;border:1px solid var(--line);border-radius:14px}.full{margin-top:16px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}.field{display:block;min-width:0;font-size:13px;font-weight:650}.field small{min-height:20px;font-weight:400}input,select,button{font:inherit}input[type=text],select{width:100%;margin-top:5px;padding:10px 12px;border:1px solid #bbcdd0;border-radius:8px;color:var(--ink);background:#fff}input[type=text]{font-size:16px;font-variant-numeric:tabular-nums}input:focus,select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}input[aria-invalid=true]{border-color:#ac3939}.range-input{border-top:1px solid var(--line);margin-top:20px;padding-top:17px}.range-readout{margin:12px 0 2px;color:var(--accent);font-weight:700;font-variant-numeric:tabular-nums}.range-note{margin:6px 0 0;font-size:12px;color:var(--muted)}.range-note.warn{color:var(--warn);background:var(--warn-bg);padding:7px 9px;border-radius:7px}.skills{margin-top:16px}.skills .fields{grid-template-columns:repeat(3,1fr)}.condition-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:16px}.toggles{display:grid;gap:9px;align-content:start}.toggle{display:flex;align-items:flex-start;gap:10px;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:#fbfdfd;cursor:pointer}.toggle input{width:18px;height:18px;margin:2px 0 0;accent-color:var(--accent);flex:none}.toggle strong{display:block;font-size:13px}.toggle small{margin-top:1px}.condition-summary{margin-top:12px;padding:10px 12px;border-radius:9px;background:#f6f9f9;font-size:13px;color:var(--muted)}.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:20px 0}button{cursor:pointer;border:1px solid var(--line);border-radius:9px;padding:11px 18px;background:#fff;color:var(--ink);font-weight:700}.primary{background:var(--accent);color:#fff;border-color:var(--accent)}#error{color:#a22e2e;font-weight:600;margin:12px 0}.result-tabs{display:flex;gap:8px;margin:12px 0 0;border-bottom:1px solid var(--line)}.result-tab{border:0;border-radius:9px 9px 0 0;padding:10px 22px;background:transparent;color:var(--muted)}.result-tab[aria-selected=true]{background:#fff;color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent);font-weight:800}.result-pane{padding-top:14px}.results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.result{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px}.result.crit{border-top:3px solid var(--accent);padding-top:16px}.result-label{color:var(--muted);font-size:13px;font-weight:650}.number{margin-top:4px;font-size:clamp(19px,2.8vw,28px);font-weight:750;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;letter-spacing:-.035em}.korean{margin-top:3px;font-size:13px;color:var(--muted)}.result-average{margin-top:5px;font-size:12px;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}.result-meta{margin-top:9px;padding-top:9px;border-top:1px solid #edf2f3;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}details{margin-top:18px;padding:14px 18px;background:#fff;border:1px solid var(--line);border-radius:12px}summary{cursor:pointer;font-weight:650}pre{margin:14px 0 0;white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.8 ui-monospace,SFMono-Regular,Consolas,monospace}footer{margin-top:20px;font-size:12px;color:var(--muted)}[hidden]{display:none!important}.channel-title{display:flex;align-items:center;gap:8px}.channel-badge{font-size:11px;font-weight:800;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:2px 8px}
@@ -983,7 +983,7 @@ function ocrLineFractionHorizontal(img, y, x1, x2, half) {
   return total ? hit/total : 0;
 }
 
-function ocrDetectFrameCandidates(sourceCanvas) {
+function ocrDetectFrameCandidates(sourceCanvas, compressed=false) {
   const sw=sourceCanvas.width, sh=sourceCanvas.height;
   const maxW=4096, maxPixels=9_000_000;
   const ds=Math.min(1, maxW/sw, Math.sqrt(maxPixels/(sw*sh)));
@@ -998,7 +998,7 @@ function ocrDetectFrameCandidates(sourceCanvas) {
   for (let y=0; y<dh; y++) {
     let idx=(y*dw)*4;
     for (let x=0; x<dw; x++,idx+=4) {
-      if (ocrBorderPixel(d,idx)) {
+      if (compressed?(d[idx]>150&&d[idx+1]>150&&d[idx+2]>150):ocrBorderPixel(d,idx)) {
         if (run[x]===0) runStart[x]=y;
         const r=++run[x];
         if (r>best[x]) { best[x]=r; bestStart[x]=runStart[x]; bestEnd[x]=y; }
@@ -1040,9 +1040,9 @@ function ocrDetectFrameCandidates(sourceCanvas) {
       if (align>0.3) continue;
       if (Math.min(g1.len,g2.len)<width*1.15) continue;
       const ox=g1.x-t.x1*scale;
-      const oy=(g1.ys+g2.ys)/2-t.ys*scale;
+      const oy=compressed?(g1.ye+g2.ye)/2-t.ye*scale:(g1.ys+g2.ys)/2-t.ys*scale;
       const margin=16*scale;
-      if (ox<-margin || oy<-margin || ox+OCR_REF_W*scale>dw+margin || oy+OCR_REF_H*scale>dh+margin) continue;
+      if ((compressed?ox+84*scale<0:ox<-margin) || (compressed?oy+96*scale<0:oy<-margin) || ox+OCR_REF_W*scale>dw+margin || oy+OCR_REF_H*scale>dh+margin) continue;
       const half=Math.max(1,2*scale);
       const vr=ocrLineFractionVertical(img,ox+728*scale,oy+116*scale,oy+618*scale,half);
       const hb1=ocrLineFractionHorizontal(img,oy+618*scale,ox+8*scale,ox+356*scale,half);
@@ -1319,13 +1319,13 @@ function ocrStatusBadge(status){if(status==='read')return '<span class="ocr-badg
 function ocrStatusClass(status){return status==='verified'||status==='read'?'ocr-good':'ocr-warn'}function ocrValueText(v){return Number.isInteger(v)?v.toLocaleString('ko-KR'):v.toLocaleString('ko-KR',{maximumFractionDigits:4})}
 function ocrApplyInput(id,value,status='verified'){if(!Number.isFinite(value)||!$(id))return false;const el=$(id);el.value=String(value);el.classList.remove('ocr-good','ocr-warn');el.classList.add(ocrStatusClass(status));return true}
 function ocrApplyScan(scan){
- if(!ocrScanQuality(scan).complete)return false;
+ if(!ocrScanQuality(scan).complete&&!(scan.partial&&Object.values(scan.triples).filter(t=>t.status==='verified').length>=8))return false;
  const t=scan.triples,s=scan.standalone;
  
  const triples=[['STR','STR','final'],['MAG','MAG','final'],['ELE','ELE','final'],['FD_P','P_FD','final'],['FD_M','M_FD','final'],['rawMIN_P','P_MIN','raw'],['FMIN_P','P_MIN','pct'],['rawMAX_P','P_MAX','raw'],['FMAX_P','P_MAX','pct'],['rawCD_P','P_CD','raw'],['FCD_P','P_CD','pct'],['rawMIN_M','M_MIN','raw'],['FMIN_M','M_MIN','pct'],['rawMAX_M','M_MAX','raw'],['FMAX_M','M_MAX','pct'],['rawCD_M','M_CD','raw'],['FCD_M','M_CD','pct'],['ADD_normal','ADD_normal','final'],['ADD_boss','ADD_boss','final']];
- for(const [id,k,p] of triples){if(t[k][p])ocrApplyInput(id,t[k][p].value,t[k].status);else{$(id).value='';$(id).classList.remove('ocr-good');$(id).classList.add('ocr-warn')}}
+ for(const [id,k,p] of triples){if(scan.partial&&t[k].status==='bad')continue;if(t[k][p])ocrApplyInput(id,t[k][p].value,t[k].status);else{$(id).value='';$(id).classList.remove('ocr-good');$(id).classList.add('ocr-warn')}}
  const singles=[['WPN_MIN','WPN_MIN_final'],['WPN_MAX','WPN_MAX_final'],['EFF_P','P_EFF'],['EFF_M','M_EFF'],['BD_P','P_BD'],['BD_M','M_BD'],['MD','MD'],['SD','SD'],['PEN_P','P_PEN'],['PEN_M','M_PEN'],['Dom_normal','DOM_normal'],['Dom_boss','DOM_boss']];
- for(const [id,k] of singles){if(s[k].candidate)ocrApplyInput(id,s[k].candidate.value,s[k].status);else{$(id).value='';$(id).classList.remove('ocr-good');$(id).classList.add('ocr-warn')}}
+ for(const [id,k] of singles){if(scan.partial&&s[k].status==='bad')continue;if(s[k].candidate)ocrApplyInput(id,s[k].candidate.value,s[k].status);else{$(id).value='';$(id).classList.remove('ocr-good');$(id).classList.add('ocr-warn')}}
  update();
 }
 function ocrReviewRows(scan){const t=scan.triples,s=scan.standalone,rows=[],add=(name,value,status,desc='')=>rows.push(`<tr><td>${name}${desc?`<small>${desc}</small>`:''}</td><td>${value===null?'—':ocrValueText(value)}</td><td>${ocrStatusBadge(status)}</td></tr>`);add('근력',t.STR.final?t.STR.final.value:null,t.STR.status);add('마법력',t.MAG.final?t.MAG.final.value:null,t.MAG.status);add('최소 무기공격력',s.WPN_MIN_final.candidate?s.WPN_MIN_final.candidate.value:null,s.WPN_MIN_final.status);add('최대 무기공격력',s.WPN_MAX_final.candidate?s.WPN_MAX_final.candidate.value:null,s.WPN_MAX_final.status);for(const [key,label] of Object.entries(OCR_PREVIEW_SINGLES))if(key==='WPN_MIN_raw'||key==='WPN_MAX_raw'||key.endsWith('_PCT'))add(label,s[key].candidate?.value??null,s[key].status);add('속성력',t.ELE.final?t.ELE.final.value:null,t.ELE.status);add('물리 고정 대미지',t.P_FD.final?t.P_FD.final.value:null,t.P_FD.status);add('마법 고정 대미지',t.M_FD.final?t.M_FD.final.value:null,t.M_FD.status);add('일반 추가 대미지',t.ADD_normal.final?t.ADD_normal.final.value:null,t.ADD_normal.status);add('일반 지배력',s.DOM_normal.candidate?s.DOM_normal.candidate.value:null,s.DOM_normal.status);add('보스 추가 대미지',t.ADD_boss.final?t.ADD_boss.final.value:null,t.ADD_boss.status);add('보스 지배력',s.DOM_boss.candidate?s.DOM_boss.candidate.value:null,s.DOM_boss.status);for(const [label,k] of [['근력 효율','P_EFF'],['마법력 효율','M_EFF'],['물리 관통력','P_PEN'],['마법 관통력','M_PEN']])add(label,s[k].candidate?s[k].candidate.value:null,s[k].status);for(const [label,k] of [['물리 rawMIN','P_MIN'],['물리 FMIN','P_MIN'],['물리 rawMAX','P_MAX'],['물리 FMAX','P_MAX'],['물리 rawCD','P_CD'],['물리 FCD','P_CD'],['마법 rawMIN','M_MIN'],['마법 FMIN','M_MIN'],['마법 rawMAX','M_MAX'],['마법 FMAX','M_MAX'],['마법 rawCD','M_CD'],['마법 FCD','M_CD']]){const part=label.includes('raw')?'raw':'pct';add(label,t[k][part]?t[k][part].value:null,t[k].status)}for(const [label,k] of [['물리 백어택','P_BD'],['마법 백어택','M_BD'],['근거리 대미지','MD'],['상태이상 대미지','SD']])add(label,s[k].candidate?s[k].candidate.value:null,s[k].status);return rows.join('')}
@@ -1372,6 +1372,129 @@ function initializeOcrPreview(){
 function ocrRenderScan(canvas,frame,scan,sourceW,sourceH){ocrPreparePreview(canvas,frame,scan);$('ocrPreviewGrid').hidden=false;$('ocrReviewDetails').hidden=false;$('ocrReviewBody').innerHTML=ocrReviewRows(scan);const statuses=[...Object.values(scan.triples).map(x=>x.status),...Object.values(scan.standalone).map(x=>x.status)],good=statuses.filter(x=>x==='verified').length,read=statuses.filter(x=>x==='read').length,mid=statuses.filter(x=>x==='derived').length,bad=statuses.filter(x=>x==='bad').length;$('ocrSummary').innerHTML=[`<div class="ocr-summary-item"><strong>패널 탐지 완료</strong>원본 ${sourceW.toLocaleString()}×${sourceH.toLocaleString()} · UI 배율 약 ${frame.scale.toFixed(2)}×</div>`,`<div class="ocr-summary-item"><strong>수치 검증</strong>${ocrStatusBadge('verified')} ${good}개 · ${ocrStatusBadge('read')} ${read}개 · ${ocrStatusBadge('derived')} ${mid}개 · ${ocrStatusBadge('bad')} ${bad}개</div>`,`<div class="ocr-summary-item"><strong>자동 입력</strong>물리·마법 기본 능력치, 최소/최대/크리티컬, 조건부 수치, 대상별 추가 대미지와 지배력</div>`].join('');return{good,mid,bad}}
 
 
+let ocrEngineScript=null;
+async function ocrGetEngine(){
+ if(!ocrEngineScript)ocrEngineScript=new Promise((resolve,reject)=>{
+  if(window.Tesseract){resolve();return}
+  const script=document.createElement('script'),timer=setTimeout(()=>{script.remove();reject(Error('보조 인식 엔진을 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.'))},30000);
+  script.src='https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js';
+  script.onload=()=>{clearTimeout(timer);resolve()};script.onerror=()=>{clearTimeout(timer);script.remove();reject(Error('보조 인식 엔진을 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.'))};document.head.append(script);
+ }).catch(e=>{ocrEngineScript=null;throw e});
+ await ocrEngineScript;
+ return Tesseract.createWorker('eng',1,{workerPath:'https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/worker.min.js',corePath:'https://cdn.jsdelivr.net/npm/tesseract.js-core@7.0.0',langPath:'https://tessdata.projectnaptha.com/4.0.0',cacheMethod:'none'});
+}
+function ocrEngineValue(text,def){
+ let value=text.trim().replace(/\s/g,'');
+ if(def.fmt==='rangeMin')value=value.split('~')[0];
+ if(def.fmt==='rangeMax')value=value.split('~').at(-1);
+ if(def.fmt==='decimal')value=value.replace(',','.');else value=value.replace(/\./g,',');
+ if(!/^[+]?\d+(?:[,.]\d+)*%?$/.test(value))return null;
+ if(def.fmt!=='decimal'&&!/^\+?(?:\d+|\d{1,3}(?:,\d{3})+)%?$/.test(value))return null;
+ const n=Number(value.replace('+','').replace('%','').replace(def.fmt==='decimal'?/$^/:/,/g,''));
+ return Number.isFinite(n)&&n>=def.min&&n<=def.max?n:null;
+}
+function ocrEngineSheet(source,frame,variant){
+ const keys=Object.keys(OCR_FIELDS),canvas=document.createElement('canvas');canvas.width=450;canvas.height=keys.length*90;
+ const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
+ for(const [i,key] of keys.entries()){
+  const def=OCR_FIELDS[key],[a,b,c,d]=def.box,pad=variant===2&&!def.fmt.startsWith('range')?(def.mode==='green'?4:7):0;
+  const x=a-pad,y=b-(variant===2?1:0),w=c-x+(variant===2?2:0),h=d-y,width=w*4,height=h*4;
+  ctx.drawImage(source,frame.x+x*frame.scale,frame.y+y*frame.scale,w*frame.scale,h*frame.scale,15,i*90+8,width,height);
+  const pixels=ctx.getImageData(15,i*90+8,width,height),data=pixels.data;
+  for(let j=0;j<data.length;j+=4){const r=data[j],g=data[j+1],b=data[j+2];
+   const strength=def.mode==='green'?(variant===1?(g-r>12&&g-b>25?(g-95)*1.9:0):(g-130)*2):(Math.min(r,g)-(variant===2?80:100))*(variant===2?1.6:2);
+   const value=255-Math.max(0,Math.min(255,strength));data[j]=data[j+1]=data[j+2]=value;
+  }
+  ctx.putImageData(pixels,15,i*90+8);
+ }
+ return canvas;
+}
+function ocrEngineScan(readings,native={}){
+ const fields={};
+ for(const [key,list] of Object.entries(readings)){
+  const counts=new Map();for(const r of list){let c=counts.get(r.value);if(!c){c={text:r.text,value:r.value,votes:0,confidence:0,cost:.08,maxCost:.15};counts.set(r.value,c)}c.votes++;c.confidence=Math.max(c.confidence,r.confidence)}
+  fields[key]=[...counts.values()].sort((a,b)=>b.votes-a.votes||b.confidence-a.confidence);for(const c of fields[key])c.cost=.015+.09/(c.votes+1);
+ }
+ const triples={};
+ for(const [key,[,raw,pct,final]] of Object.entries(OCR_PREVIEW_GROUPS)){
+  const matches=[];
+  for(const r of fields[raw])for(const p of fields[pct])for(const f of fields[final])if(f.value===Math.floor(r.value*(100+p.value)/100))matches.push({raw:r,pct:p,final:f,cost:r.cost+p.cost+f.cost,status:'verified'});
+  matches.sort((a,b)=>a.cost-b.cost);triples[key]=matches.length&&(!matches[1]||matches[1].cost-matches[0].cost>.005)?matches[0]:{raw:null,pct:null,final:null,status:'bad',cost:9};
+  if(triples[key].status==='bad'){
+   const derived=[];for(const r of fields[raw])for(const f of fields[final]){
+    if(r.votes<3||f.votes<3||r.value<=0)continue;
+    const p=Math.round(f.value*100/r.value-100);
+    if(p<0||p>OCR_FIELDS[pct].max||Math.floor(r.value*(100+p)/100)!==f.value||!fields[pct].some(v=>String(p).includes(String(v.value))))continue;
+    derived.push({raw:r,pct:{text:String(p)+'%',value:p,cost:.12,maxCost:.15},final:f,status:'derived',cost:r.cost+f.cost+.12});
+   }
+   if(derived.length===1)triples[key]=derived[0];
+  }
+ }
+ const standalone={};
+ for(const key of Object.keys(OCR_PREVIEW_SINGLES)){
+  const [c,next]=fields[key],total=fields[key].reduce((sum,x)=>sum+x.votes,0),trusted=c&&c.votes>=2&&(c.confidence>=60||c.votes>=8&&c.votes/total>=.8)&&(!next||c.votes>next.votes)&&(!next||c.confidence>=80||c.votes>=next.votes*3);
+  standalone[key]={candidate:trusted?c:null,status:trusted?'read':'bad'};
+  if(native[key])standalone[key]={candidate:native[key],status:'read'};
+ }
+ return {fields,triples,standalone,partial:true,weaponRates:Object.fromEntries(['WPN_MIN_PCT','WPN_MAX_PCT'].map(k=>[k,standalone[k].candidate]))};
+}
+async function ocrLocateCompressed(source){
+ const strict=ocrDetectFrameCandidates(source),relaxed=ocrDetectFrameCandidates(source,true),frames=[...strict,...relaxed];if(!frames.length)return null;
+ const first=frames[0],near=frames.filter(f=>Math.abs(f.x-first.x)<first.scale*8&&Math.abs(f.y-first.y)<first.scale*8&&Math.abs(f.scale/first.scale-1)<.015);
+ ocrSetStatus('압축 이미지의 숫자를 정밀 인식하는 중… 처음에는 인식 엔진을 내려받습니다.');
+ const worker=await ocrGetEngine(),keys=Object.keys(OCR_FIELDS),readings=Object.fromEntries(keys.map(k=>[k,[]]));
+ try{
+  await worker.setParameters({tessedit_pageseg_mode:'6',tessedit_char_whitelist:'0123456789,+.%~',user_defined_dpi:'300'});
+  for(let pass=0;pass<12;pass++){
+   const base=near[pass%near.length],phase=Math.floor(pass/3)%4,frame={...base,x:base.x+(phase===3?-1:0)*base.scale,y:base.y+(phase===1?-1.5:phase===2?1:0)*base.scale},canvas=ocrEngineSheet(source,frame,pass%3);
+   const {data}=await worker.recognize(canvas,{}, {text:true,blocks:true});
+   for(const block of data.blocks||[])for(const paragraph of block.paragraphs||[])for(const line of paragraph.lines||[]){
+    const index=Math.floor((line.bbox.y0+line.bbox.y1)/2/90),key=keys[index];if(!key)continue;
+    const value=ocrEngineValue(line.text,OCR_FIELDS[key]);if(value!==null)readings[key].push({value,text:line.text.trim(),confidence:line.confidence});
+   }
+   ocrSetProgress(35+pass*3.5,true);
+  }
+  const initial=ocrEngineScan(readings),retry=new Set();
+  for(const [key,[,...members]] of Object.entries(OCR_PREVIEW_GROUPS))if(initial.triples[key].status==='bad')members.forEach(k=>retry.add(k));
+  for(const key of Object.keys(OCR_PREVIEW_SINGLES)){const list=initial.fields[key];if(initial.standalone[key].status==='bad'||list[1]&&list[0].votes<list[1].votes*3)retry.add(key)}
+  await worker.setParameters({tessedit_pageseg_mode:'7'});
+  for(let pass=0;pass<6;pass++){
+   const base=near[pass%near.length],frame={...base,x:base.x+(pass<3?0:-2)*base.scale,y:base.y+(pass<3?-1:0)*base.scale},variant=pass%3,sheet=ocrEngineSheet(source,frame,variant);
+   for(const key of retry){
+    const def=OCR_FIELDS[key],index=keys.indexOf(key),pad=variant===2&&!def.fmt.startsWith('range')?(def.mode==='green'?4:7):0,width=(def.box[2]-def.box[0]+pad+2)*4+30;
+    const crop=document.createElement('canvas');crop.width=width;crop.height=90;crop.getContext('2d').drawImage(sheet,0,index*90,width,90,0,0,width,90);
+    const {data}=await worker.recognize(crop,{}, {text:true});const value=ocrEngineValue(data.text,def);if(value!==null)readings[key].push({value,text:data.text.trim(),confidence:data.confidence});
+   }
+  }
+  await worker.setParameters({tessedit_pageseg_mode:'6'});
+  for(let variant=0;variant<3;variant++){
+   const sheet=ocrEngineSheet(source,first,variant);
+   for(const key of retry){
+    if(!OCR_PREVIEW_SINGLES[key])continue;
+    const crop=document.createElement('canvas');crop.width=450;crop.height=90;
+    crop.getContext('2d').drawImage(sheet,0,keys.indexOf(key)*90,450,90,0,0,450,90);
+    const {data}=await worker.recognize(crop),value=ocrEngineValue(data.text,OCR_FIELDS[key]);
+    if(value!==null)readings[key].push({value,text:data.text.trim(),confidence:data.confidence});
+   }
+  }
+  await worker.setParameters({tessedit_pageseg_mode:'7'});
+  const native={};
+  for(const key of Object.keys(OCR_PREVIEW_SINGLES).filter(k=>OCR_FIELDS[k].mode==='green')){
+   const list=[];await worker.setParameters({tessedit_char_whitelist:OCR_FIELDS[key].fmt.startsWith('range')?'0123456789%~':'0123456789%'});
+   for(const scale of [3,4,5,6,7,8]){
+    const [x,y,x2,y2]=OCR_FIELDS[key].box,crop=document.createElement('canvas');crop.width=(x2-x+4)*scale;crop.height=(y2-y)*scale;
+    crop.getContext('2d').drawImage(source,first.x+(x-2)*first.scale,first.y+y*first.scale,(x2-x+4)*first.scale,(y2-y)*first.scale,0,0,crop.width,crop.height);
+    const {data}=await worker.recognize(crop),value=ocrEngineValue(data.text,OCR_FIELDS[key]);if(value!==null)list.push({value,text:data.text.trim(),confidence:data.confidence});
+   }
+   const values=[...new Set(list.map(c=>c.value))].map(value=>({value,votes:list.filter(c=>c.value===value).length,confidence:Math.max(...list.filter(c=>c.value===value).map(c=>c.confidence))})).sort((a,b)=>b.votes-a.votes);
+   const c=values[0],next=values[1];if(c&&readings[key].some(r=>r.value===c.value)&&(!next||c.votes>=next.votes*3)&&(c.votes>=5||c.votes>=4&&c.confidence>=50))native[key]={...c,text:String(c.value),cost:.06,maxCost:.15};
+  }
+  const scan=ocrEngineScan(readings,native),verified=Object.values(scan.triples).filter(t=>t.status==='verified').length;
+  if(verified<8)return null;
+  return {frame:first,normalized:ocrNormalizeFrame(source,first),scan};
+ }finally{await worker.terminate()}
+}
+
 async function ocrLoadBlob(blob, sourceLabel='이미지') {
   setInputTab('ocr');
   if (ocrBusy) return;
@@ -1384,7 +1507,7 @@ async function ocrLoadBlob(blob, sourceLabel='이미지') {
     source.getContext('2d',{willReadFrequently:true}).drawImage(bitmap,0,0); bitmap.close?.();
     ocrSetProgress(28,true); ocrSetStatus('전체 화면에서 능력치 패널 위치를 찾는 중…');
     await new Promise(r=>setTimeout(r,0));
-    const located=await ocrLocateStats(source);
+    const located=await ocrLocateStats(source)||await ocrLocateCompressed(source);
     if(!located)throw new Error('수치를 정확하게 읽지 못해 기존 입력값을 유지했습니다. 원본 해상도의 이미지로 다시 시도해 주세요.');
     const {frame,normalized,scan}=located;
     ocrSetProgress(55,true); ocrSetStatus('패널을 정규화하고 게임 숫자 글리프를 인식하는 중…');
@@ -1394,7 +1517,8 @@ async function ocrLoadBlob(blob, sourceLabel='이미지') {
     ocrApplyScan(scan,true);
     const summary=ocrRenderScan(source,frame,scan,source.width,source.height);
     ocrSetProgress(100,true);
-    if (summary.bad) ocrSetStatus(`자동 입력 완료 · 교차검증 ${summary.good}개 · 보정 ${summary.mid}개 · 확인 필요 ${summary.bad}개. 아래 인식 결과 검토를 확인하세요.`,'warn');
+    $('ocrReviewDetails').open=summary.bad>0;
+    if (summary.bad) ocrSetStatus(`자동 입력 완료 · 교차검증 ${summary.good}개 · 보정 ${summary.mid}개 · 확인 필요 ${summary.bad}개. 확인 필요 항목은 기존 값을 유지했습니다. 아래 인식 결과를 확인하세요.`,'warn');
     else if (summary.mid) ocrSetStatus(`자동 입력 완료 · 교차검증 ${summary.good}개 · 자동 보정 ${summary.mid}개. 계산에 필요한 값이 반영되었습니다.`,'ok');
     else ocrSetStatus(`자동 입력 완료 · 수치 인식과 교차검증을 완료했습니다.`,'ok');
     setTimeout(()=>ocrSetProgress(100,false),900);
@@ -1680,7 +1804,7 @@ const StatComparison=(()=>{
  const state={stoneLevels:{},comparison:{direction:'forward',skill:0,hit:'',reference:'',unit:1,critical:'crit',position:'mid',steps:{}},classId:41,selected:0,configs:{},abilities:{},filter:'all',search:'',mode:'skills',results:new Map(),buffs:{noblesse:false,title:false}};
  let pending=false,saveTimer=0,toastTimer=0;
  const shell=document.createElement('div');shell.id='v9Shell';shell.innerHTML=`
- <div class="v9-top"><div class="v9-brand"><span class="v9-brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="23" height="23" fill="none"><path d="M4 18V12M10 18V8M16 18V4M3 21H21" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="m17 12 3-3 2 2" stroke="currentColor" stroke-width="2"/></svg></span><h1>대미지 계산기<span class="v9-version">v9.11</span></h1></div>
+ <div class="v9-top"><div class="v9-brand"><span class="v9-brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="23" height="23" fill="none"><path d="M4 18V12M10 18V8M16 18V4M3 21H21" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="m17 12 3-3 2 2" stroke="currentColor" stroke-width="2"/></svg></span><h1>대미지 계산기<span class="v9-version">v9.12</span></h1></div>
  <nav class="v9-topnav" role="tablist" aria-label="계산 방식"><button type="button" data-view="skills" aria-selected="true">스킬 비교</button><button type="button" data-view="compare" aria-selected="false">능력치 비교</button><button type="button" data-view="manual" aria-selected="false">직접 계산</button></nav>
  <div class="v9-top-actions"><button type="button" class="v9-btn" id="v92HelpButton">도움말</button><button type="button" class="v9-btn" id="v92SettingsButton">설정</button><button type="button" class="v9-btn" id="v9AbilitiesButton">능력치</button><button type="button" class="v9-btn primary" id="v92ImageButton">이미지 자동 입력</button><input type="file" id="v9ImportFile" accept="application/json,.json" hidden></div></div>
  <details class="v9-toolbar" id="v92ContextPanel" open><summary class="v92-context-toggle"><span id="v92ContextTitle">캐릭터 · 대상</span><span>변경</span></summary><div class="v9-context"><label class="v9-control v9-job"><span>직업</span><select id="v9Class" aria-label="직업 선택"></select></label><label class="v9-control v9-level"><span>레벨</span><input id="v9Level" type="number" min="1" max="235" value="235" aria-label="캐릭터 레벨"></label><label class="v9-control v9-target"><span>대상 몬스터</span><select id="v9Monster" aria-label="대상 몬스터"></select></label><label class="v9-control" id="v9DifficultyField" hidden><span>난이도</span><select id="v9Difficulty" aria-label="던전 난이도"></select></label><div class="v9-context-summary" id="v9ContextSummary"></div></div>
@@ -1827,7 +1951,7 @@ const StatComparison=(()=>{
   <section><h3>2. 스킬 설정</h3><p>스킬 이름을 누르면 레벨, 각성 1·2, 특화석을 설정할 수 있습니다. 한 스킬에 총 3개, 유니크는 1개까지이며 같은 종류는 한 스킬에만 장착할 수 있습니다. 특화석 창에서 스킬을 선택한 뒤 목록의 특화석을 우클릭해 장착하고, 슬롯의 특화석을 우클릭해 해제합니다. 터치 화면에서는 특화석을 누른 뒤 장착·해제 버튼을 사용하세요.</p><p>특화석과 스킬 자체 버프는 해당 스킬에만 적용합니다. 스킬 버프는 활성 상태의 적중을 계산합니다. 이미 능력치에 포함된 버프는 꺼서 중복 적용을 피하세요. 조건부 버프는 발동 상태를 선택하세요.</p></section>
   <section><h3>3. 결과와 계산식</h3><p>스킬 비교는 <strong>1회 적중</strong> 기준입니다. 직타·소환 타격을 따로 표시하며 총 타수·쿨타임 기반 DPS가 아닙니다. 스킬 설정의 <strong>계산식 보기</strong>에서 중간 연산을 확인할 수 있습니다.</p><p>직접 계산은 직타 계수·소환 배율·소환 계수를 수동으로 비교하는 공간입니다. 소환 계수 SC는 직타 스킬 계수와 같은 척도이며, 공격력·속성력에는 (SC + 100) / 50을 곱합니다. 예를 들어 SC가 2,000이면 적용 배수는 42입니다. 물리/마법 탭과 계산 상세를 사용할 수 있습니다.</p></section>
   <section><h3>4. 능력치 비교</h3><p>스킬 목록의 ‘직타 · 직접 입력’은 직타 스킬 계수를, ‘소환 · 직접 입력’은 소환 배율을 입력해 비교합니다. 소환 계수는 ‘직접 계산’의 값을 함께 사용합니다.</p><p>마법력(+)·근력(+)·속성력(+) 등은 장비 옵션의 증가량입니다. 현재 (%)를 적용해 상태창 능력치 변화를 계산합니다. 능력치 입력과 이미지 자동 입력에는 상태창의 현재 수치를 그대로 사용하세요.</p><p>‘필요한 능력치 찾기’에서는 기준 능력치와 증가량을 정합니다. 같은 효과 이상을 내는 각 능력치의 최소 증가량을 볼 수 있습니다.</p><p>‘증가량 환산’에서는 각 행의 실제 대미지 변화를 기준 능력치의 인접 증가 구간에 비례 환산해 소수점으로 표시합니다. 기준 증가량은 사용하지 않습니다. ‘약’으로 표시되는 값은 장비 옵션을 비교하기 위한 근사값이며, 실제 옵션 적용 시 버림으로 결과가 달라질 수 있습니다.</p><p>증가량이 양수여도 크리티컬 저항·버림·최소/최대 상한 때문에 대미지가 같을 수 있습니다. 기준 효과가 없는 경우 안내와 다음 상승 구간을 확인하세요.</p></section></div>
-  <section class="v92-setting-block"><h3>입력값과 저장</h3><p>능력치는 게임에 표시된 현재 값을 입력하세요. 최소·최대 대미지는 추가 세부정보의 (+)와 (%)를 각각 입력합니다. 최소 대미지가 최대 대미지를 넘으면 최대 대미지에 고정됩니다.</p><p>이미지 인식과 계산은 브라우저 안에서 처리합니다. 자동 저장은 ‘설정’에서 끌 수 있습니다. ‘캐시 데이터 삭제’는 현재 화면의 입력값을 유지하며, ‘모든 설정 초기화’는 현재 값도 처음 상태로 되돌립니다.</p></section>`);
+  <section class="v92-setting-block"><h3>입력값과 저장</h3><p>능력치는 게임에 표시된 현재 값을 입력하세요. 최소·최대 대미지는 추가 세부정보의 (+)와 (%)를 각각 입력합니다. 최소 대미지가 최대 대미지를 넘으면 최대 대미지에 고정됩니다.</p><p>이미지 인식과 계산은 브라우저 안에서 처리하며 이미지는 서버로 전송하지 않습니다. 압축 이미지의 보조 인식은 인터넷으로 인식 엔진을 내려받아 실행합니다. 자동 저장은 ‘설정’에서 끌 수 있습니다. ‘캐시 데이터 삭제’는 현재 화면의 입력값을 유지하며, ‘모든 설정 초기화’는 현재 값도 처음 상태로 되돌립니다.</p></section>`);
  const confirmDialog=makeDialog('v92Confirm','확인','<p id="v92ConfirmText"></p>','<button type="button" class="v9-btn" id="v92ConfirmCancel">취소</button><button type="button" class="v9-btn primary" id="v92ConfirmOkay">확인</button>');
  let confirmCallback=null;
  function askConfirm(text,action){$('v92ConfirmText').textContent=text;confirmCallback=action;confirmDialog.showModal();$('v92ConfirmCancel').focus()}
@@ -2266,7 +2390,7 @@ const StatComparison=(()=>{
 
  const oldRecognizeStats=ocrRecognizeStats;ocrRecognizeStats=canvas=>{const scan=oldRecognizeStats(canvas);scan.weaponRates=Object.fromEntries(['WPN_MIN_PCT','WPN_MAX_PCT'].map(key=>[key,scan.standalone[key].status==='read'?scan.standalone[key].candidate:null]));return scan};
  const oldOcrLoad=ocrLoadBlob;ocrLoadBlob=async(...args)=>{if(!dialog.open)openAbilities('ocr');await oldOcrLoad(...args);schedule()};
- const oldApplyScan=ocrApplyScan;ocrApplyScan=scan=>{if(!ocrScanQuality(scan).complete)return false;for(const key of ['STR','MAG','ELE','ADD_normal','ADD_boss'])if(scan.triples[key].pct)ocrApplyInput(key+'_PCT',scan.triples[key].pct.value,scan.triples[key].status);for(const [id,key] of [['FD_P_PCT','P_FD'],['FD_M_PCT','M_FD']])if(scan.triples[key].pct)ocrApplyInput(id,scan.triples[key].pct.value,scan.triples[key].status);for(const [key,value] of Object.entries(scan.weaponRates||{}))if(value)ocrApplyInput(key,value.value);return oldApplyScan(scan)};
+ const oldApplyScan=ocrApplyScan;ocrApplyScan=scan=>{if(!ocrScanQuality(scan).complete&&!(scan.partial&&Object.values(scan.triples).filter(t=>t.status==='verified').length>=8))return false;for(const key of ['STR','MAG','ELE','ADD_normal','ADD_boss'])if(scan.triples[key].pct)ocrApplyInput(key+'_PCT',scan.triples[key].pct.value,scan.triples[key].status);for(const [id,key] of [['FD_P_PCT','P_FD'],['FD_M_PCT','M_FD']])if(scan.triples[key].pct)ocrApplyInput(id,scan.triples[key].pct.value,scan.triples[key].status);for(const [key,value] of Object.entries(scan.weaponRates||{}))if(value)ocrApplyInput(key,value.value);return oldApplyScan(scan)};
 
 
  $('v9Export').addEventListener('click',()=>{const url=URL.createObjectURL(new Blob([JSON.stringify(persisted(),null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='latale-calculator-v9-settings.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)});
