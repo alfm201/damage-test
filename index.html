@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>라테일 대미지 계산기 v9.14</title>
+<title>라테일 대미지 계산기 v9.15</title>
 <style>
 :root{color-scheme:light;--ink:#183238;--muted:#62777c;--line:#d7e3e5;--accent:#146b72;--accent-soft:#e6f0f1;--warn:#8a5a11;--warn-bg:#fff6df}
 *{box-sizing:border-box}body{margin:0;background:#f3f7f7;color:var(--ink);font:15px/1.6 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}main{max-width:1180px;margin:auto;padding:32px 20px 44px}h1{margin:3px 0 8px;font-size:clamp(25px,4vw,34px);letter-spacing:-.04em}h2{margin:0 0 5px;font-size:18px}h3{margin:0;font-size:15px}p{margin:6px 0 14px}.eyebrow{color:var(--accent);font-size:12px;font-weight:750;letter-spacing:.13em}.muted,small{color:var(--muted)}small{display:block;font-size:12px}.notice{padding:12px 16px;background:var(--accent-soft);border-radius:10px;margin:18px 0}.columns{display:grid;grid-template-columns:1fr 1fr;gap:16px}.panel{padding:20px;background:#fff;border:1px solid var(--line);border-radius:14px}.full{margin-top:16px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}.field{display:block;min-width:0;font-size:13px;font-weight:650}.field small{min-height:20px;font-weight:400}input,select,button{font:inherit}input[type=text],select{width:100%;margin-top:5px;padding:10px 12px;border:1px solid #bbcdd0;border-radius:8px;color:var(--ink);background:#fff}input[type=text]{font-size:16px;font-variant-numeric:tabular-nums}input:focus,select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}input[aria-invalid=true]{border-color:#ac3939}.range-input{border-top:1px solid var(--line);margin-top:20px;padding-top:17px}.range-readout{margin:12px 0 2px;color:var(--accent);font-weight:700;font-variant-numeric:tabular-nums}.range-note{margin:6px 0 0;font-size:12px;color:var(--muted)}.range-note.warn{color:var(--warn);background:var(--warn-bg);padding:7px 9px;border-radius:7px}.skills{margin-top:16px}.skills .fields{grid-template-columns:repeat(3,1fr)}.condition-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:16px}.toggles{display:grid;gap:9px;align-content:start}.toggle{display:flex;align-items:flex-start;gap:10px;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:#fbfdfd;cursor:pointer}.toggle input{width:18px;height:18px;margin:2px 0 0;accent-color:var(--accent);flex:none}.toggle strong{display:block;font-size:13px}.toggle small{margin-top:1px}.condition-summary{margin-top:12px;padding:10px 12px;border-radius:9px;background:#f6f9f9;font-size:13px;color:var(--muted)}.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:20px 0}button{cursor:pointer;border:1px solid var(--line);border-radius:9px;padding:11px 18px;background:#fff;color:var(--ink);font-weight:700}.primary{background:var(--accent);color:#fff;border-color:var(--accent)}#error{color:#a22e2e;font-weight:600;margin:12px 0}.result-tabs{display:flex;gap:8px;margin:12px 0 0;border-bottom:1px solid var(--line)}.result-tab{border:0;border-radius:9px 9px 0 0;padding:10px 22px;background:transparent;color:var(--muted)}.result-tab[aria-selected=true]{background:#fff;color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent);font-weight:800}.result-pane{padding-top:14px}.results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.result{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px}.result.crit{border-top:3px solid var(--accent);padding-top:16px}.result-label{color:var(--muted);font-size:13px;font-weight:650}.number{margin-top:4px;font-size:clamp(19px,2.8vw,28px);font-weight:750;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;letter-spacing:-.035em}.korean{margin-top:3px;font-size:13px;color:var(--muted)}.result-average{margin-top:5px;font-size:12px;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}.result-meta{margin-top:9px;padding-top:9px;border-top:1px solid #edf2f3;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}details{margin-top:18px;padding:14px 18px;background:#fff;border:1px solid var(--line);border-radius:12px}summary{cursor:pointer;font-weight:650}pre{margin:14px 0 0;white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.8 ui-monospace,SFMono-Regular,Consolas,monospace}footer{margin-top:20px;font-size:12px;color:var(--muted)}[hidden]{display:none!important}.channel-title{display:flex;align-items:center;gap:8px}.channel-badge{font-size:11px;font-weight:800;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:2px 8px}
@@ -1823,6 +1823,12 @@ const StatComparison=(()=>{
   };
   flat(main,name);add(main+'_PCT',name+'(%)','%p',1,10000,'percent');
   add('EFF_'+x,name+' 효율','%p',1,10000,'percent');
+  if(x==='P'){
+   const targets=['WPN_MIN','WPN_MAX'],values=targets.map(id=>Number(s[id]||0)),percents=targets.map(id=>Number(s[id+'_PCT']||0));
+   const raw=values.map((v,i)=>Math.max(0,Math.ceil(v*100/(100+percents[i])-1e-8)));
+   Object.assign(add('WPN_BOTH','무기 공격력(+)','',integerStep(Math.max(...raw)),1e10,'flat'),{current:0,targets,values,percents});
+   Object.assign(add('WPN_BOTH_PCT','무기 공격력(%)','%p',1,10000,'percent'),{current:0,targets,values,percents});
+  }
   for(const [id,label] of x==='P'?[['WPN_MIN','최소 무기공격력'],['WPN_MAX','최대 무기공격력']]:[['ELE','속성력']]){
    flat(id,label);add(id+'_PCT',label+'(%)','%p',1,10000,'percent');
   }
@@ -1839,7 +1845,14 @@ const StatComparison=(()=>{
  }
  function change(input,def,delta){
   const s={...input},id=def.id,n=Math.max(0,Math.min(def.max,def.current+delta)),increase=n-def.current;
-  if(def.kind==='flat')s[id]=E.scaled(input[id]||0,input[id+'_PCT']||0,increase,0);
+  if(def.targets){
+   for(const key of def.targets){
+    const percent=Number(input[key+'_PCT']||0);
+    s[key]=E.scaled(input[key]||0,percent,def.kind==='flat'?increase:0,def.kind==='percent'?increase:0);
+    if(def.kind==='percent')s[key+'_PCT']=percent+increase;
+   }
+  }
+  else if(def.kind==='flat')s[id]=E.scaled(input[id]||0,input[id+'_PCT']||0,increase,0);
   else{
    s[id]=n;
    if(/^(STR|MAG|ELE|WPN_MIN|WPN_MAX|FD_[PM]|ADD_(normal|boss))_PCT$/.test(id)){
@@ -1925,7 +1938,7 @@ const StatComparison=(()=>{
  const state={stoneLevels:{},comparison:{direction:'forward',skill:0,hit:'',reference:'',unit:1,critical:'crit',position:'mid',steps:{}},classId:41,selected:0,configs:{},abilities:{},filter:'all',search:'',mode:'skills',results:new Map(),buffs:{noblesse:false,title:false}};
  let pending=false,saveTimer=0,toastTimer=0;
  const shell=document.createElement('div');shell.id='v9Shell';shell.innerHTML=`
- <div class="v9-top"><div class="v9-brand"><span class="v9-brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="23" height="23" fill="none"><path d="M4 18V12M10 18V8M16 18V4M3 21H21" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="m17 12 3-3 2 2" stroke="currentColor" stroke-width="2"/></svg></span><h1>대미지 계산기<span class="v9-version">v9.14</span></h1></div>
+ <div class="v9-top"><div class="v9-brand"><span class="v9-brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="23" height="23" fill="none"><path d="M4 18V12M10 18V8M16 18V4M3 21H21" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="m17 12 3-3 2 2" stroke="currentColor" stroke-width="2"/></svg></span><h1>대미지 계산기<span class="v9-version">v9.15</span></h1></div>
  <nav class="v9-topnav" role="tablist" aria-label="계산 방식"><button type="button" data-view="skills" aria-selected="true">스킬 비교</button><button type="button" data-view="compare" aria-selected="false">능력치 비교</button><button type="button" data-view="manual" aria-selected="false">직접 계산</button></nav>
  <div class="v9-top-actions"><button type="button" class="v9-btn" id="v92HelpButton">도움말</button><button type="button" class="v9-btn" id="v92SettingsButton">설정</button><button type="button" class="v9-btn" id="v9AbilitiesButton">능력치</button><button type="button" class="v9-btn primary" id="v92ImageButton">이미지 자동 입력</button><input type="file" id="v9ImportFile" accept="application/json,.json" hidden></div></div>
  <details class="v9-toolbar" id="v92ContextPanel" open><summary class="v92-context-toggle"><span id="v92ContextTitle">캐릭터 · 대상</span><span>변경</span></summary><div class="v9-context"><label class="v9-control v9-job"><span>직업</span><select id="v9Class" aria-label="직업 선택"></select></label><label class="v9-control v9-level"><span>레벨</span><input id="v9Level" type="number" min="1" max="235" value="235" aria-label="캐릭터 레벨"></label><label class="v9-control v9-target"><span>대상 몬스터</span><select id="v9Monster" aria-label="대상 몬스터"></select></label><label class="v9-control" id="v9DifficultyField" hidden><span>난이도</span><select id="v9Difficulty" aria-label="던전 난이도"></select></label><div class="v9-context-summary" id="v9ContextSummary"></div></div>
@@ -2424,6 +2437,10 @@ const StatComparison=(()=>{
   return `<strong tabindex="0" title="대미지 변화 +${num(e.gain)}${extra}">+${num(e.amount)}${unit}</strong>`;
  }
  function comparisonStatHtml(d){
+  if(d.targets){
+   const percent=d.kind==='percent',values=percent?d.percents:d.values,suffix=percent?'%':'';
+   return `<strong title="${percent?'최소·최대 무기공격력의 (%)를 함께 올립니다.':'최소·최대 무기공격력에 각각 (+) 옵션과 현재 (%)를 적용합니다.'}">${esc(d.label)}</strong><small>최소 ${num(values[0])}${suffix} · 최대 ${num(values[1])}${suffix}</small>`;
+  }
   if(d.kind!=='flat')return `<strong>${esc(d.label)}</strong><small>${num(d.current)}${d.kind==='percent'?'%':d.unit}</small>`;
   return `<strong title="장비 옵션의 (+) 증가량에 현재 (%) ${num(d.percent)}%를 적용합니다.">${esc(d.label)}</strong><small title="현재 (%) ${num(d.percent)}% 적용 후 수치">상태창 ${num(d.displayCurrent)}</small>`;
  }
